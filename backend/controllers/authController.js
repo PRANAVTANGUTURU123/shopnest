@@ -39,7 +39,7 @@ const registerUser = async (req, res) => {
     });
 
     if (user) {
-      await sendOtpEmail(user, otp);
+      sendOtpEmail(user, otp).catch((err) => console.error('Failed to send OTP email:', err.message));
       res.status(201).json({
         message: 'Registration successful! Please check your email for the OTP to verify your account.',
         email: user.email
@@ -92,7 +92,7 @@ const resendOtp = async (req, res) => {
     user.otpExpires = Date.now() + OTP_TTL_MS;
     await user.save();
 
-    await sendOtpEmail(user, otp);
+    sendOtpEmail(user, otp).catch((err) => console.error('Failed to send OTP email:', err.message));
     res.json({ message: 'A new OTP has been sent to your email' });
   } catch (error) {
     res.status(500).json({ message: error.message });
